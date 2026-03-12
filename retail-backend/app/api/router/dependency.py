@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-
+from bson import ObjectId
 from app.core.config import settings
 from app.db.mongodb import db_manager
 
@@ -17,9 +17,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             algorithms=[settings.ALGORITHM]
         )
 
-        email: str = payload.get("sub")
+        _id: str = payload.get("sub")
 
-        if email is None:
+        if _id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token payload"
@@ -30,9 +30,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token"
         )
-
-    # user = await db_manager.db["users"].find_one({"username": username})
-    user = await db_manager.db["users"].find_one({"email": email})
+    try:
+        # user = await db_manager.db["users"].find_one({"username": username})
+        user = await db_manager.db["users"].find_one({"_id":ObjectId( _id)})
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID"
+        )
 
     if user is None:
         raise HTTPException(

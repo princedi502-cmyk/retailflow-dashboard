@@ -16,6 +16,7 @@ class OrderCreate(BaseModel):
 
 class OrderResponse(BaseModel):
     id: str
+    user_id: str  
     items: List[OrderItem]
     total: float
     created_at: datetime

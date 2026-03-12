@@ -1,0 +1,571 @@
+Core Practice Product
+Collaborative Knowledge Platform Backend
+
+Think of something like:
+
+Notion
+
+Confluence
+
+Stack Overflow
+
+Your job is to build the backend API for a collaborative workspace where teams create documents, discussions, comments, and analytics.
+
+This forces you to practice:
+
+nested data structures
+
+permission systems
+
+heavy aggregation queries
+
+search
+
+event logging
+
+notifications
+
+collaboration logic
+
+System Overview
+
+Collections you will build:
+
+users
+workspaces
+documents
+document_versions
+comments
+reactions
+notifications
+activity_logs
+
+Core backend features:
+
+authentication
+
+permission system
+
+collaboration
+
+version history
+
+analytics
+
+notifications
+
+search
+
+rate limiting
+
+background tasks
+
+caching
+
+audit logs
+
+Stage 1 — Backend Architecture
+
+Project structure:
+
+app/
+ ├── main.py
+ ├── config.py
+ ├── database.py
+ ├── dependencies.py
+ ├── models/
+ ├── schemas/
+ ├── routes/
+ ├── services/
+ ├── repositories/
+ ├── utils/
+ └── core/
+
+Concepts to practice:
+
+dependency injection
+
+async MongoDB
+
+service layer
+
+repository pattern
+
+environment configs
+
+Stage 2 — Authentication System
+
+Endpoints:
+
+POST /auth/register
+POST /auth/login
+POST /auth/refresh
+POST /auth/logout
+GET  /auth/me
+
+Features:
+
+JWT tokens
+
+refresh tokens
+
+token invalidation
+
+hashed passwords
+
+user sessions
+
+Advanced practice:
+
+Store sessions in MongoDB.
+
+Stage 3 — Workspace System
+
+Users can create workspaces and invite others.
+
+Collection:
+
+workspaces
+
+Example document:
+
+{
+ _id,
+ name,
+ owner_id,
+ members: [
+   {
+    user_id,
+    role
+   }
+ ],
+ created_at
+}
+
+Endpoints:
+
+POST /workspaces
+GET  /workspaces
+GET  /workspaces/{id}
+POST /workspaces/{id}/invite
+PATCH /workspaces/{id}/members/{user_id}
+DELETE /workspaces/{id}/members/{user_id}
+Stage 4 — Document System
+
+Documents belong to workspaces.
+
+Collection:
+
+documents
+
+Example schema:
+
+{
+ _id,
+ workspace_id,
+ title,
+ content,
+ created_by,
+ created_at,
+ updated_at
+}
+
+Endpoints:
+
+POST /documents
+GET /documents
+GET /documents/{id}
+PATCH /documents/{id}
+DELETE /documents/{id}
+
+Add filtering:
+
+GET /documents?workspace_id=123
+Stage 5 — Document Versioning (Hard Feature)
+
+Every edit creates a version.
+
+Collection:
+
+document_versions
+
+Example:
+
+{
+ _id,
+ document_id,
+ content,
+ edited_by,
+ version_number,
+ created_at
+}
+
+Endpoints:
+
+GET /documents/{id}/versions
+GET /documents/{id}/versions/{version}
+POST /documents/{id}/restore/{version}
+
+Hard logic:
+
+maintain version history
+
+restore previous version
+
+Stage 6 — Comments System
+
+Documents support threaded comments.
+
+Collection:
+
+comments
+
+Example:
+
+{
+ _id,
+ document_id,
+ user_id,
+ parent_comment_id,
+ content,
+ created_at
+}
+
+Endpoints:
+
+POST /documents/{id}/comments
+GET  /documents/{id}/comments
+DELETE /comments/{id}
+
+Hard logic:
+
+nested comments
+
+comment threads
+
+Stage 7 — Reactions System
+
+Users react to comments.
+
+Collection:
+
+reactions
+
+Example:
+
+{
+ _id,
+ comment_id,
+ user_id,
+ type
+}
+
+Example reaction types:
+
+like
+love
+laugh
+
+Aggregation practice:
+
+Return:
+
+{
+ comment_id,
+ likes: 10,
+ laughs: 4
+}
+Stage 8 — Notification System
+
+Users get notifications when:
+
+someone comments
+
+someone mentions them
+
+someone reacts
+
+Collection:
+
+notifications
+
+Example:
+
+{
+ _id,
+ user_id,
+ type,
+ reference_id,
+ read,
+ created_at
+}
+
+Endpoints:
+
+GET /notifications
+PATCH /notifications/{id}/read
+
+Background task:
+
+Create notifications automatically.
+
+Stage 9 — Activity Logs
+
+Track every important event.
+
+Collection:
+
+activity_logs
+
+Example:
+
+{
+ user_id,
+ action,
+ resource_type,
+ resource_id,
+ created_at
+}
+
+Examples:
+
+User created document
+User edited document
+User added comment
+Stage 10 — Search System
+
+Add document search.
+
+Endpoints:
+
+GET /search/documents?q=fastapi
+
+Use:
+
+MongoDB text index
+
+Stage 11 — Analytics APIs (Aggregation Practice)
+Endpoint
+GET /analytics/workspace-activity
+
+Return:
+
+{
+ total_documents
+ total_comments
+ active_users
+}
+Top Contributors
+GET /analytics/top-users
+
+Aggregation logic:
+
+Count:
+
+documents created
+
+comments made
+
+Most Active Documents
+GET /analytics/trending-documents
+
+Sort by:
+
+comments
+
+reactions
+
+edits
+
+Aggregation tools you must use:
+
+$match
+$group
+$lookup
+$unwind
+$sort
+$limit
+$dateToString
+Stage 12 — Permissions System (Hard)
+
+Roles:
+
+owner
+editor
+viewer
+
+Rules:
+
+Owner
+
+manage members
+
+delete workspace
+
+Editor
+
+edit documents
+
+comment
+
+Viewer
+
+read only
+
+Practice:
+
+Dependency based permission checks.
+
+Stage 13 — Caching
+
+Cache heavy queries:
+
+GET /documents
+GET /analytics
+
+Use Redis.
+
+Implement:
+
+TTL
+
+cache invalidation
+
+Stage 14 — Rate Limiting
+
+Protect APIs.
+
+Example:
+
+POST /comments
+
+Limit:
+
+10 requests / minute
+
+Use:
+
+slowapi
+
+redis
+
+Stage 15 — File Upload
+
+Documents can contain attachments.
+
+Endpoints:
+
+POST /documents/{id}/attachments
+
+Features:
+
+upload files
+
+store metadata
+
+save file URL
+
+Stage 16 — Background Jobs
+
+Use:
+
+FastAPI background tasks
+
+or Celery
+
+Tasks:
+
+notification generation
+
+email alerts
+
+activity logging
+
+Stage 17 — Logging System
+
+Use structured logging.
+
+Log:
+
+API requests
+errors
+database failures
+authentication failures
+
+Library:
+
+loguru
+Stage 18 — Testing
+
+Use:
+
+pytest
+httpx
+
+Test:
+
+authentication
+
+document creation
+
+comments
+
+permissions
+
+analytics
+
+Stage 19 — Dockerize Backend
+
+Create:
+
+Dockerfile
+docker-compose.yml
+
+Services:
+
+fastapi
+mongodb
+redis
+Final Capstone
+
+Build Collaborative Workspace Backend
+
+Features:
+
+Authentication
+Workspace management
+Document system
+Version history
+Threaded comments
+Reactions
+Notifications
+Search
+Analytics
+Permissions
+Caching
+Rate limiting
+Logging
+Testing
+Docker
+
+Why This Project Is Hard
+
+This system forces you to practice:
+
+nested data modeling
+
+relationship queries
+
+aggregation pipelines
+
+complex business logic
+
+permission systems
+
+background processing
+
+analytics queries
+
+performance optimization
+
+These are real backend engineering problems.

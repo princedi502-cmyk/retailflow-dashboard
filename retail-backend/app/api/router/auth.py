@@ -6,8 +6,7 @@ from app.db.mongodb import db_manager
 from app.core.security import hashed_password, verify_password, create_access_token
 
 
-router = APIRouter(prefix="/auth", tags=["auth"])
-
+router = APIRouter(prefix="/auth", tags=["auth"])      
 
 @router.post("/register", response_model=UserResponse)
 async def register(user_in: UserCreate):
@@ -56,8 +55,9 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     access_token = create_access_token(
     data={
-        "sub": user["email"],
-        "role": user.get("role", "employee")
+        "sub": str(user["_id"]),
+        "email":user["email"],
+        "role": user.get("role")
     }
 )
 

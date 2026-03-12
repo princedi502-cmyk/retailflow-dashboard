@@ -21,6 +21,7 @@ class OrderItemResponse(BaseModel):
 
 class OrderResponse(BaseModel):
     id: str
+    user_id: str  
     items: List[OrderItemResponse]
     total_price: float
     created_at: datetime

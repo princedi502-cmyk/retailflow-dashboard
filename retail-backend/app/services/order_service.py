@@ -4,7 +4,7 @@ from app.db.mongodb import db_manager
 from uuid import uuid4
 
 
-async def create_order_service(order):
+async def create_order_service(order,user:dict):
 
     product_collection = db_manager.db["products"]
     order_collection = db_manager.db["orders"]
@@ -49,6 +49,7 @@ async def create_order_service(order):
     order_data = {
         "items": order_items,
         "total_price": total_price,
+        "user_id": str(user["_id"]),
         "created_at": datetime.utcnow()
     }
 

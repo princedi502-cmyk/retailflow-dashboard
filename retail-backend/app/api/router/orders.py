@@ -9,9 +9,9 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=OrderResponse)
-async def create_order(order: OrderCreate, user=Depends(require_employee)):
+async def create_order(order: OrderCreate, current_user:dict=Depends(get_current_user)):
 
-    return await create_order_service(order)
+    return await create_order_service(order,current_user)
 
 
 @router.get("/", response_model=list[OrderResponse])
